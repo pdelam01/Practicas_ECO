@@ -1,0 +1,33 @@
+service: servicio-subasta
+
+plugins:
+  - serverless-bundle
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  environment:
+    NOMBRE_TABLA_SUBASTAS: ${self:custom.TablaSubastas.name}
+  iamRoleStatements: 
+    - ${file(iam/TablaSubastasIAM.yml):TablaSubastasIAM}
+
+resources:
+  Resources:
+    TablaSubastas: ${file(resources/TablaSubastas.yml):TablaSubastas}
+
+functions:
+  crearSubasta:
+    handler: src/handlers/crearSubasta.handler
+    events:
+      - http:
+          method: POST
+          path: /subasta
+
+custom:
+  TablaSubastas:
+    name: !Ref TablaSubastas
+    arn: !GetAtt TablaSubastas.Arn

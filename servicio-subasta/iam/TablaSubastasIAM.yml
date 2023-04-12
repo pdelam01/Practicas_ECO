@@ -1,0 +1,6 @@
+TablaSubastasIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+  Resource:
+    - ${self:custom.TablaSubastas.arn}
